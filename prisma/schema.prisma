@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleType {
+  // UX
+  UX
+  // DESIGN
+  DESIGN
+  // FRONT
+  FRONT
+  // BACK
+  BACK
+  // ADMIN
+  ADMIN
+  // OWNER
+  OWNER
+  // STAKEHOLDER
+  STAKEHOLDER
+}
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  type      RoleType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  UserRole  Member[]
+}
+
+model Member {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId Int
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId Int
+
+  assignedAt DateTime @default(now())
+
+  @@unique([userId, roleId, projectId])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName    String
+  lastName     String
+  email        String  @unique
+  password     String
+  refreshToken String?
+
+  project Project[]
+  members Member[]
+
+  @@map("users")
+}
+
+model Project {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  slug        String  @unique
+  description String? @db.Text
+
+  user       User         @relation(fields: [owner], references: [id])
+  owner      String
+  UserRole   Member[]
+  UsStatuts  UsStatus[]
+  TaskStatus TaskStatus[]
+  UserStory  UserStory[]
+  Task       Task[]
+}
+
+model Color {
+  id         Int          @id @default(autoincrement())
+  hex        String       @unique
+  UsStatus   UsStatus[]
+  TaskStatus TaskStatus[]
+}
+
+model UsStatus {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String
+  slug      String
+  isColsed  Boolean     @default(false)
+  projectId Int
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  colorHex  String
+  color     Color       @relation(fields: [colorHex], references: [hex])
+  UserStory UserStory[]
+
+  @@unique([projectId, name])
+  @@unique([projectId, slug])
+}
+
+model UserStory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subject     String
+  description String?  @db.Text
+  order       Int
+  projectId   Int
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  statusId    Int
+  usStatus    UsStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  Task        Task[]
+}
+
+model TaskStatus {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String
+  slug      String
+  isColsed  Boolean @default(false)
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  colorHex  String
+  color     Color   @relation(fields: [colorHex], references: [hex])
+  Task      Task[]
+
+  @@unique([projectId, name])
+  @@unique([projectId, slug])
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subject     String
+  description String? @db.Text
+  order       Int
+
+  usId       Int
+  userStory  UserStory  @relation(fields: [usId], references: [id], onDelete: Cascade)
+  projectId  Int
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  statusId   Int
+  taskStatus TaskStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+}
