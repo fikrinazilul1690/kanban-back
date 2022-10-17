@@ -32,9 +32,9 @@ export class UserEntity implements User {
   @Exclude()
   members: MemberEntity[];
 
-  @ApiProperty()
+  @ApiProperty({ example: [RoleType.OWNER], enum: RoleType, isArray: true })
   @Expose()
-  get roles(): Array<RoleType> | RoleType {
+  get roles(): Array<RoleType> {
     const role = this.members.map((data) => data?.role.type);
 
     const uniqueRole = [...new Set(role)];

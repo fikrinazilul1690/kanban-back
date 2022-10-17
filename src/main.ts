@@ -1,3 +1,4 @@
+import { ProjectModule } from './project/project.module';
 import {
   ClassSerializerInterceptor,
   RequestMethod,
@@ -47,7 +48,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    include: [AuthModule, UserModule],
+    include: [AuthModule, UserModule, ProjectModule],
   });
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: 'Kanban Board',
