@@ -10,7 +10,15 @@ import { ProjectModule } from './project/project.module';
 import { ProjectDefaultModule } from './project-default/project-default.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, TestModule, UserModule, MemberModule, ProjectModule, ProjectDefaultModule],
+  imports: [
+    AuthModule,
+    PrismaModule,
+    TestModule,
+    UserModule,
+    MemberModule,
+    ProjectModule,
+    ProjectDefaultModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

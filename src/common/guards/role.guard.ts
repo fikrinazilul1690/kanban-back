@@ -22,11 +22,13 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const { user, body, params } = context.switchToHttp().getRequest();
-    const projectId = body?.projectId || params.id;
+    const { user, body, params, cookies } = context.switchToHttp().getRequest();
+    const projectId =
+      +body.projectId || +params.projectId || +cookies.currentProject;
 
     const member = this.prisma.member.findMany({
       where: {
+        projectId,
         role: {
           type: {
             in: user.role,

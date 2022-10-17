@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaClientExceptionFilter } from './prisma/prisma-client-exception.filter';
 import { UserModule } from './user/user.module';
 import { MemberModule } from './member/member.module';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -54,6 +55,8 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: 'Kanban Board',
   });
+
+  app.use(cookieParser());
 
   await app.listen(3500);
 }

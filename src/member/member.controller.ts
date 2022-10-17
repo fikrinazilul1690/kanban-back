@@ -1,4 +1,3 @@
-import { RoleType } from '@prisma/client';
 import {
   Controller,
   Get,
@@ -7,16 +6,12 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Req,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { RolesGuard } from 'src/common/guards/role.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller({ version: '1', path: 'members' })
 @ApiTags('members')
@@ -49,8 +44,7 @@ export class MemberController {
 
   @Delete(':memberId')
   @ApiBearerAuth()
-  remove(@Param('memberId') id: string, @Req() req) {
-    console.log(req);
+  remove(@Param('memberId') id: string) {
     return this.memberService.remove(+id);
   }
 }

@@ -41,7 +41,7 @@ export class ProjectController {
   }
 
   @Get()
-  @ApiOkResponse({ type: ProjectEntity })
+  @ApiOkResponse({ type: ProjectEntity, isArray: true })
   @Public()
   findAll(): Promise<ProjectEntity[]> {
     return this.projectService.findAll();
