@@ -18,5 +18,8 @@ export class MemberEntity implements Member {
   projectId: number;
 
   @ApiProperty()
+  isOwner: boolean;
+
+  @ApiProperty()
   assignedAt: Date;
 }

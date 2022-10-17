@@ -7,9 +7,10 @@ import { TestModule } from './test/test.module';
 import { UserModule } from './user/user.module';
 import { MemberModule } from './member/member.module';
 import { ProjectModule } from './project/project.module';
+import { ProjectDefaultModule } from './project-default/project-default.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, TestModule, UserModule, MemberModule, ProjectModule],
+  imports: [AuthModule, PrismaModule, TestModule, UserModule, MemberModule, ProjectModule, ProjectDefaultModule],
   controllers: [AppController],
   providers: [AppService],
 })

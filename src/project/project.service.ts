@@ -1,5 +1,10 @@
+import { ProjectDefaultService } from './../project-default/project-default.service';
 import { PrismaService } from './../prisma/prisma.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { User } from '@prisma/client';
@@ -7,17 +12,20 @@ import slugify from 'slugify';
 
 @Injectable()
 export class ProjectService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private projectDefault: ProjectDefaultService,
+  ) {}
   async create(user: User, createProjectDto: CreateProjectDto) {
     const { title, description } = createProjectDto;
     const slug = await this.createSlug(title);
-    return await this.prisma.project.create({
+    const project = await this.prisma.project.create({
       data: {
         title,
         slug,
         description,
         owner: user.id,
-        UserRole: {
+        Member: {
           create: {
             role: {
               connectOrCreate: {
@@ -34,10 +42,14 @@ export class ProjectService {
                 id: user.id,
               },
             },
+            isOwner: true,
           },
         },
       },
     });
+
+    await this.projectDefault.generate(project.id);
+    return project;
   }
 
   async findAll() {
@@ -105,6 +117,31 @@ export class ProjectService {
   }
 
   async remove(id: number) {
-    return await this.prisma.project.delete({ where: { id } });
+    await this.prisma.project.delete({ where: { id } });
+  }
+
+  async leave(user: User, id: number) {
+    const member = await this.prisma.member.findUnique({
+      where: {
+        userId_projectId: {
+          userId: user.id,
+          projectId: id,
+        },
+      },
+    });
+
+    if (member.isOwner) {
+      throw new BadRequestException(
+        "Unfortunately, this project can't be left without an owner",
+      );
+    }
+    await this.prisma.member.delete({
+      where: {
+        userId_projectId: {
+          userId: user.id,
+          projectId: id,
+        },
+      },
+    });
   }
 }

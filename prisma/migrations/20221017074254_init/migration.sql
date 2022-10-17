@@ -15,9 +15,11 @@ CREATE TABLE `Member` (
     `userId` VARCHAR(191) NOT NULL,
     `roleId` INTEGER NOT NULL,
     `projectId` INTEGER NOT NULL,
+    `isOwner` BOOLEAN NOT NULL DEFAULT false,
     `assignedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    UNIQUE INDEX `Member_userId_roleId_projectId_key`(`userId`, `roleId`, `projectId`),
+    UNIQUE INDEX `Member_userId_projectId_key`(`userId`, `projectId`),
+    UNIQUE INDEX `Member_userId_roleId_key`(`userId`, `roleId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -66,7 +68,7 @@ CREATE TABLE `UsStatus` (
     `updatedAt` DATETIME(3) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `slug` VARCHAR(191) NOT NULL,
-    `isColsed` BOOLEAN NOT NULL DEFAULT false,
+    `isClosed` BOOLEAN NOT NULL DEFAULT false,
     `projectId` INTEGER NOT NULL,
     `colorHex` VARCHAR(191) NOT NULL,
 
@@ -127,7 +129,7 @@ ALTER TABLE `Member` ADD CONSTRAINT `Member_userId_fkey` FOREIGN KEY (`userId`) 
 ALTER TABLE `Member` ADD CONSTRAINT `Member_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Member` ADD CONSTRAINT `Member_projectId_fkey` FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Member` ADD CONSTRAINT `Member_projectId_fkey` FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Project` ADD CONSTRAINT `Project_owner_fkey` FOREIGN KEY (`owner`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -11,6 +11,7 @@ import { AppModule } from './app.module';
 import { AuthModule } from './auth/auth.module';
 import { PrismaClientExceptionFilter } from './prisma/prisma-client-exception.filter';
 import { UserModule } from './user/user.module';
+import { MemberModule } from './member/member.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -48,7 +49,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    include: [AuthModule, UserModule, ProjectModule],
+    include: [AuthModule, UserModule, ProjectModule, MemberModule],
   });
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: 'Kanban Board',

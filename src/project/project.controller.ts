@@ -7,6 +7,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -16,6 +18,7 @@ import { User } from '@prisma/client';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -64,7 +67,17 @@ export class ProjectController {
 
   @Delete(':projectId')
   @ApiBearerAuth()
+  @ApiNoContentResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('projectId', ParseIntPipe) id: number) {
-    return this.projectService.remove(+id);
+    return this.projectService.remove(id);
+  }
+
+  @Delete(':projectId/leave')
+  @ApiBearerAuth()
+  @ApiNoContentResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  leave(@GetUser() user: User, @Param('projectId', ParseIntPipe) id: number) {
+    return this.projectService.leave(user, id);
   }
 }
