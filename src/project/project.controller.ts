@@ -9,6 +9,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -26,7 +27,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { ParseIntPipe } from '@nestjs/common/pipes';
 
 @Controller({ version: '1', path: 'projects' })
-@ApiTags('projects')
+@ApiTags('project')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
@@ -52,7 +53,9 @@ export class ProjectController {
   @Public()
   findOne(
     @Param('projectId', ParseIntPipe) id: number,
+    @Req() req,
   ): Promise<ProjectEntity> {
+    console.log(req);
     return this.projectService.findOne(+id);
   }
 

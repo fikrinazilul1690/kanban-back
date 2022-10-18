@@ -8,6 +8,8 @@ import { UserModule } from './user/user.module';
 import { MemberModule } from './member/member.module';
 import { ProjectModule } from './project/project.module';
 import { ProjectDefaultModule } from './project-default/project-default.module';
+import { UsStatusModule } from './us-status/us-status.module';
+import { UserStoryModule } from './user-story/user-story.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { ProjectDefaultModule } from './project-default/project-default.module';
     MemberModule,
     ProjectModule,
     ProjectDefaultModule,
+    UsStatusModule,
+    UserStoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

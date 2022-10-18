@@ -7,7 +7,7 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller({ version: '1', path: 'users' })
-@ApiTags('users')
+@ApiTags('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

@@ -53,7 +53,10 @@ export class ProjectService {
   }
 
   async findAll() {
-    return await this.prisma.project.findMany();
+    const projects = await this.prisma.project.findMany();
+    if (projects.length === 0)
+      throw new NotFoundException('Projects not Found!');
+    return projects;
   }
 
   async createSlug(title: string) {

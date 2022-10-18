@@ -29,8 +29,8 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    const { email, confirmPassword, lastName, firstName } = registerDto;
-    const hashedPassword = await this.hashData(confirmPassword);
+    const { email, password, lastName, firstName } = registerDto;
+    const hashedPassword = await this.hashData(password);
     const user = await this.prisma.user.create({
       data: {
         email,

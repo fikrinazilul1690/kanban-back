@@ -80,18 +80,6 @@ export class ProjectDefaultService {
       },
     ];
 
-    const colors = this.prisma.color.createMany({
-      data: [
-        { hex: '#A9AABC' },
-        { hex: '#E44057' },
-        { hex: '#E47C40' },
-        { hex: '#E4CE40' },
-        { hex: '#A8E440' },
-        { hex: '#5178D3' },
-      ],
-      skipDuplicates: true,
-    });
-
     const usStatuses = this.prisma.usStatus.createMany({
       data: usStatusDefault,
       skipDuplicates: true,
@@ -102,6 +90,6 @@ export class ProjectDefaultService {
       skipDuplicates: true,
     });
 
-    return await this.prisma.$transaction([colors, usStatuses, taskStatuses]);
+    return await this.prisma.$transaction([usStatuses, taskStatuses]);
   }
 }

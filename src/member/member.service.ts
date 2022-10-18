@@ -1,7 +1,12 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class MemberService {
@@ -35,19 +40,49 @@ export class MemberService {
     });
   }
 
-  findAll() {
-    return `This action returns all member`;
+  async findAll() {
+    const members = await this.prisma.member.findMany();
+    if (members.length === 0) throw new NotFoundException('Member not Found!');
+    return members;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} member`;
+  async findOne(id: number) {
+    const member = await this.prisma.member.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!member)
+      throw new NotFoundException(`Member with id:${id} does not exist`);
+
+    return member;
   }
 
-  update(id: number, updateMemberDto: UpdateMemberDto) {
-    return `This action updates a #${id} member`;
+  async update(id: number, updateMemberDto: UpdateMemberDto) {
+    const { role } = updateMemberDto;
+    return await this.prisma.member.update({
+      where: { id },
+      data: {
+        role: {
+          connectOrCreate: {
+            where: {
+              type: role,
+            },
+            create: {
+              type: role,
+            },
+          },
+        },
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} member`;
+  async remove(id: number, req: Request) {
+    if (req.member.isOwner)
+      throw new BadRequestException(
+        "Unfortunately, this project can't be left without an owner",
+      );
+    return await this.prisma.member.delete({ where: { id } });
   }
 }

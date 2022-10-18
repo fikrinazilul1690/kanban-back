@@ -51,7 +51,7 @@ model Member {
   assignedAt DateTime @default(now())
 
   @@unique([userId, projectId])
-  @@unique([userId, roleId])
+  @@unique([userId, projectId, roleId])
 }
 
 model User {

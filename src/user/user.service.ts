@@ -17,38 +17,29 @@ export class UserService {
   }
 
   async findAll(filter: FilterUserDto) {
-    let users = await this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
+      where: {
+        members: {
+          some: {
+            projectId: {
+              equals: filter.projectId,
+            },
+          },
+        },
+      },
       include: {
         members: {
+          where: {
+            projectId: filter.projectId,
+          },
           include: {
             role: true,
           },
         },
       },
     });
-    if (filter?.projectId) {
-      users = await this.prisma.user.findMany({
-        where: {
-          members: {
-            some: {
-              projectId: {
-                equals: filter.projectId,
-              },
-            },
-          },
-        },
-        include: {
-          members: {
-            where: {
-              projectId: filter.projectId,
-            },
-            include: {
-              role: true,
-            },
-          },
-        },
-      });
-    }
+
+    if (users.length === 0) throw new NotFoundException('Users not Found!');
 
     return users;
   }

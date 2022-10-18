@@ -1,3 +1,4 @@
+import { UsStatusModule } from './us-status/us-status.module';
 import { ProjectModule } from './project/project.module';
 import {
   ClassSerializerInterceptor,
@@ -50,11 +51,19 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    include: [AuthModule, UserModule, ProjectModule, MemberModule],
+    include: [
+      AuthModule,
+      UserModule,
+      ProjectModule,
+      MemberModule,
+      UsStatusModule,
+    ],
   });
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: 'Kanban Board',
   });
+
+  app.enableCors();
 
   app.use(cookieParser());
 

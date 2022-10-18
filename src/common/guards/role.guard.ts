@@ -1,7 +1,7 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '@prisma/client';
+import { RoleType } from '@prisma/client';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
@@ -10,10 +10,10 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector, private prisma: PrismaService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<RoleType[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -26,19 +26,20 @@ export class RolesGuard implements CanActivate {
     const projectId =
       +body.projectId || +params.projectId || +cookies.currentProject;
 
-    const member = this.prisma.member.findMany({
+    const member = await this.prisma.member.findUnique({
       where: {
-        projectId,
-        role: {
-          type: {
-            in: user.role,
-          },
+        userId_projectId: {
+          userId: user.id,
+          projectId,
         },
+      },
+      include: {
+        role: true,
       },
     });
 
     if (user && member) {
-      return true;
+      return requiredRoles.some((role) => member.role.type.includes(role));
     }
 
     return false;
