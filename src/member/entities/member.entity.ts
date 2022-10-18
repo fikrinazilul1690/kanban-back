@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Member, Role, RoleType } from '@prisma/client';
 import { Type } from 'class-transformer';
 
@@ -11,6 +11,9 @@ export class MemberEntity implements Member {
 
   @ApiProperty()
   roleId: number;
+
+  @ApiHideProperty()
+  role: Role;
 
   @ApiProperty()
   projectId: number;
