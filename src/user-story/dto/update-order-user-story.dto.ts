@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  ArrayMinSize,
   IsDefined,
   IsNotEmpty,
   IsNumber,
@@ -23,9 +24,10 @@ export class OrderUserStoryDto {
 
 export class UpdateOrderUserStoryDto {
   @ApiProperty({ type: OrderUserStoryDto, isArray: true })
+  @ArrayMinSize(2)
   @IsNotEmpty()
   @IsDefined()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => OrderUserStoryDto)
   bulkStories: OrderUserStoryDto[];
 }

@@ -1,5 +1,4 @@
 import { UpdateOrderUserStoryDto } from './dto/update-order-user-story.dto';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserStoryDto } from './dto/create-user-story.dto';

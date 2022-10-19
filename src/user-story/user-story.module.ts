@@ -9,8 +9,6 @@ import { UserStoryController } from './user-story.controller';
 })
 export class UserStoryModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(UserStoryMiddleware)
-      .forRoutes('/v1/userstories/:usId(\\d+$)');
+    consumer.apply(UserStoryMiddleware).forRoutes('/v1/userstories/:usId');
   }
 }

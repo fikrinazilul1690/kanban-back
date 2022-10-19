@@ -1,4 +1,7 @@
-import { ValidationFilter, ValidationException } from './validation.filter';
+import {
+  ValidationFilter,
+  ValidationException,
+} from './common/filters/validation.filter';
 import { UserStoryModule } from './user-story/user-story.module';
 import { UsStatusModule } from './us-status/us-status.module';
 import { ProjectModule } from './project/project.module';
@@ -13,7 +16,7 @@ import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { AuthModule } from './auth/auth.module';
-import { PrismaClientExceptionFilter } from './prisma/prisma-client-exception.filter';
+import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter';
 import { UserModule } from './user/user.module';
 import { MemberModule } from './member/member.module';
 import * as cookieParser from 'cookie-parser';
