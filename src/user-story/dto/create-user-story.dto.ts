@@ -1,20 +1,34 @@
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateUserStoryDto {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsDefined()
   subject: string;
 
   @ApiProperty()
-  description: string;
-
-  @ApiHideProperty()
-  @Exclude()
-  order: number;
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  description?: string;
 
   @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @IsDefined()
   projectId: number;
 
   @ApiProperty()
-  statusSlug: string;
+  @IsNumber()
+  @IsNotEmpty()
+  @IsOptional()
+  statusId?: number;
 }

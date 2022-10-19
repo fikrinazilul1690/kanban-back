@@ -3,17 +3,24 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+  PickType,
+} from '@nestjs/swagger';
 import { Auth } from './entities/auth.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Public } from 'src/common/decorators/public.decorator';
+import { Patch } from '@nestjs/common/decorators';
 
 @Controller({ version: ['1'], path: 'auth' })
 @ApiTags('auth')
+@Public()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: Auth })
@@ -21,7 +28,6 @@ export class AuthController {
     return await this.authService.login(loginDto);
   }
 
-  @Public()
   @Post('register')
   @ApiCreatedResponse({ type: UserEntity })
   async register(@Body() registerDTO: RegisterDto): Promise<UserEntity> {
@@ -29,17 +35,18 @@ export class AuthController {
     return new UserEntity(user);
   }
 
-  @Public()
-  @Post('revoke')
-  @ApiOkResponse()
-  @HttpCode(HttpStatus.OK)
-  revoke(@Body() payload: RefreshTokenDto) {
-    return this.authService.revoke(payload.rt);
+  @Post('refresh')
+  @ApiCreatedResponse({ type: PickType(Auth, ['accessToken'] as const) })
+  refreshAccessToken(
+    @Body() payload: RefreshTokenDto,
+  ): Promise<Pick<Auth, 'accessToken'>> {
+    return this.authService.refreshAccessToken(payload.rt);
   }
 
-  @Public()
-  @Post('refresh')
-  refreshAccessToken(@Body() payload: RefreshTokenDto) {
-    return this.authService.refreshAccessToken(payload.rt);
+  @Patch('revoke')
+  @ApiNoContentResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  revoke(@Body() payload: RefreshTokenDto) {
+    return this.authService.revoke(payload.rt);
   }
 }

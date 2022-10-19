@@ -1,5 +1,7 @@
+import { UpdateOrderUserStoryDto } from './dto/update-order-user-story.dto';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserStoryDto } from './dto/create-user-story.dto';
 import { UpdateUserStoryDto } from './dto/update-user-story.dto';
 
@@ -7,8 +9,8 @@ import { UpdateUserStoryDto } from './dto/update-user-story.dto';
 export class UserStoryService {
   constructor(private prisma: PrismaService) {}
   async create(createUserStoryDto: CreateUserStoryDto) {
-    const { subject, description, projectId, statusSlug } = createUserStoryDto;
-    const countUserStories = await this.countUserStories(projectId, statusSlug);
+    const { subject, description, projectId, statusId } = createUserStoryDto;
+    const countUserStories = await this.countUserStories(projectId, statusId);
     const order = await this.createOrder(countUserStories);
     return await this.prisma.userStory.create({
       data: {
@@ -22,22 +24,19 @@ export class UserStoryService {
         },
         usStatus: {
           connect: {
-            projectId_slug: {
-              projectId,
-              slug: statusSlug,
-            },
+            id: statusId,
           },
         },
       },
     });
   }
 
-  async countUserStories(projectId: number, statusSlug: string) {
+  async countUserStories(projectId: number, statusId: number) {
     return await this.prisma.userStory.count({
       where: {
         projectId,
         usStatus: {
-          slug: statusSlug,
+          id: statusId,
         },
       },
     });
@@ -47,19 +46,49 @@ export class UserStoryService {
     return countUserStories + 1;
   }
 
-  findAll() {
-    return `This action returns all userStory`;
+  async findAll() {
+    const userStories = await this.prisma.userStory.findMany();
+    if (userStories.length === 0)
+      throw new NotFoundException('User stories does not exist');
+    return userStories;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userStory`;
+  async findOne(id: number) {
+    const userStory = await this.prisma.userStory.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!userStory)
+      throw new NotFoundException(`User story with id:${id} does not exist`);
+    return userStory;
   }
 
-  update(id: number, updateUserStoryDto: UpdateUserStoryDto) {
-    return `This action updates a #${id} userStory`;
+  async update(id: number, updateUserStoryDto: UpdateUserStoryDto) {
+    return await this.prisma.userStory.update({
+      where: {
+        id,
+      },
+      data: updateUserStoryDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} userStory`;
+  async remove(id: number) {
+    return await this.prisma.userStory.delete({ where: { id } });
+  }
+
+  async updateOrder(updateOrderUsDto: UpdateOrderUserStoryDto) {
+    const { bulkStories } = updateOrderUsDto;
+    return await this.prisma.$transaction(
+      bulkStories.map((us) => {
+        const { id, order } = us;
+        return this.prisma.userStory.update({
+          where: { id },
+          data: {
+            order,
+          },
+        });
+      }),
+    );
   }
 }

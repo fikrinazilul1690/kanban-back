@@ -96,11 +96,6 @@ export class AuthService {
         refreshToken: null,
       },
     });
-
-    return {
-      statusCode: HttpStatus.OK,
-      success: true,
-    };
   }
 
   async refreshAccessToken(rt: string) {

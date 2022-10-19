@@ -1,3 +1,5 @@
+import { ValidationFilter, ValidationException } from './validation.filter';
+import { UserStoryModule } from './user-story/user-story.module';
 import { UsStatusModule } from './us-status/us-status.module';
 import { ProjectModule } from './project/project.module';
 import {
@@ -5,6 +7,7 @@ import {
   RequestMethod,
   ValidationPipe,
   VersioningType,
+  ValidationError,
 } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -37,12 +40,32 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
+      skipMissingProperties: false,
+      exceptionFactory: (errors: ValidationError[]) => {
+        const errMsg = {};
+        errors.forEach((err) => {
+          if (err.children.length !== 0) {
+            err.children.forEach((err) => {
+              err.children.forEach(
+                (err) =>
+                  (errMsg[err.property] = [...Object.values(err.constraints)]),
+              );
+            });
+          } else {
+            errMsg[err.property] = [...Object.values(err.constraints)];
+          }
+        });
+        return new ValidationException(errMsg);
+      },
     }),
   );
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+  app.useGlobalFilters(
+    new PrismaClientExceptionFilter(httpAdapter),
+    new ValidationFilter(),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Kanban Board - Sistem Manajemen Aplikasi')
@@ -57,6 +80,7 @@ async function bootstrap() {
       ProjectModule,
       MemberModule,
       UsStatusModule,
+      UserStoryModule,
     ],
   });
   SwaggerModule.setup('api', app, document, {
