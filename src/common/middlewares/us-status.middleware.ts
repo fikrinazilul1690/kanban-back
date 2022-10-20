@@ -8,7 +8,6 @@ export class UsStatusMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const { usStatusId } = req.params;
     const usStatus = await this.usStatusServise.findOne(+usStatusId);
-    console.log('middleware');
     res.cookie('currentProject', usStatus.projectId);
     req.usStatus = usStatus;
     next();

@@ -8,7 +8,6 @@ export class MemberMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const { memberId } = req.params;
     const member = await this.memberService.findOne(+memberId);
-    console.log('middleware');
     if (!member) {
       throw new NotFoundException(`member with id:${memberId} does not exist`);
     }

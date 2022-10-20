@@ -8,10 +8,8 @@ export class UserStoryMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const { usId } = req.params;
     if (Number(usId)) {
-      console.log('midd');
       const { usId } = req.params;
       const userStory = await this.usService.findOne(+usId);
-      console.log('middleware');
       res.cookie('currentProject', userStory.projectId);
       req.userStory = userStory;
       next();

@@ -53,14 +53,13 @@ export class ProjectController {
   @Public()
   findOne(
     @Param('projectId', ParseIntPipe) id: number,
-    @Req() req,
   ): Promise<ProjectEntity> {
-    console.log(req);
     return this.projectService.findOne(+id);
   }
 
   @Patch(':projectId')
   @ApiBearerAuth()
+  @ApiOkResponse({ type: ProjectEntity })
   update(
     @Param('projectId', ParseIntPipe) id: number,
     @Body() updateProjectDto: UpdateProjectDto,

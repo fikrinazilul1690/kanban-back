@@ -3,39 +3,38 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserStoryDto } from './dto/create-user-story.dto';
 import { UpdateUserStoryDto } from './dto/update-user-story.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class UserStoryService {
   constructor(private prisma: PrismaService) {}
   async create(createUserStoryDto: CreateUserStoryDto) {
-    const { subject, description, projectId, statusId } = createUserStoryDto;
-    const countUserStories = await this.countUserStories(projectId, statusId);
+    const { subject, description, projectId, statusSlug } = createUserStoryDto;
+    const countUserStories = await this.countUserStories(projectId, statusSlug);
     const order = await this.createOrder(countUserStories);
     return await this.prisma.userStory.create({
       data: {
         subject,
         description,
         order,
-        project: {
-          connect: {
-            id: projectId,
-          },
-        },
         usStatus: {
           connect: {
-            id: statusId,
+            projectId_slug: {
+              projectId,
+              slug: statusSlug || 'new',
+            },
           },
         },
       },
     });
   }
 
-  async countUserStories(projectId: number, statusId: number) {
+  async countUserStories(projectId: number, statusSlug: string) {
     return await this.prisma.userStory.count({
       where: {
         projectId,
         usStatus: {
-          id: statusId,
+          slug: statusSlug,
         },
       },
     });
@@ -63,12 +62,37 @@ export class UserStoryService {
     return userStory;
   }
 
-  async update(id: number, updateUserStoryDto: UpdateUserStoryDto) {
+  async update(
+    id: number,
+    updateUserStoryDto: UpdateUserStoryDto,
+    req: Request,
+  ) {
+    const { description, subject, statusSlug } = updateUserStoryDto;
+    const projectId = +req.cookies['currentProject'];
+    const count = await this.countUserStories(projectId, statusSlug);
+
+    let order: number;
+
+    if (req.userStory.statusSlug !== statusSlug) {
+      order = await this.createOrder(count);
+    }
     return await this.prisma.userStory.update({
       where: {
         id,
       },
-      data: updateUserStoryDto,
+      data: {
+        subject,
+        description,
+        usStatus: {
+          connect: {
+            projectId_slug: {
+              slug: statusSlug,
+              projectId,
+            },
+          },
+        },
+        order,
+      },
     });
   }
 

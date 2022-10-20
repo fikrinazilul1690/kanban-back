@@ -10,6 +10,8 @@ import { ProjectModule } from './project/project.module';
 import { ProjectDefaultModule } from './project-default/project-default.module';
 import { UsStatusModule } from './us-status/us-status.module';
 import { UserStoryModule } from './user-story/user-story.module';
+import { TaskStatusModule } from './task-status/task-status.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { UserStoryModule } from './user-story/user-story.module';
     ProjectDefaultModule,
     UsStatusModule,
     UserStoryModule,
+    TaskStatusModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

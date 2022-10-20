@@ -19,13 +19,15 @@ export class UserService {
   async findAll(filter: FilterUserDto) {
     const users = await this.prisma.user.findMany({
       where: {
-        members: {
-          some: {
-            projectId: {
-              equals: filter.projectId,
-            },
-          },
-        },
+        ...(filter?.projectId
+          ? {
+              members: {
+                some: {
+                  projectId: filter.projectId,
+                },
+              },
+            }
+          : {}),
       },
       include: {
         members: {

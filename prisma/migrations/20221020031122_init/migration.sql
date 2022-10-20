@@ -86,7 +86,7 @@ CREATE TABLE `UserStory` (
     `description` TEXT NULL,
     `order` INTEGER NOT NULL,
     `projectId` INTEGER NOT NULL,
-    `statusId` INTEGER NOT NULL,
+    `statusSlug` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -141,10 +141,7 @@ ALTER TABLE `UsStatus` ADD CONSTRAINT `UsStatus_projectId_fkey` FOREIGN KEY (`pr
 ALTER TABLE `UsStatus` ADD CONSTRAINT `UsStatus_colorHex_fkey` FOREIGN KEY (`colorHex`) REFERENCES `Color`(`hex`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `UserStory` ADD CONSTRAINT `UserStory_projectId_fkey` FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `UserStory` ADD CONSTRAINT `UserStory_statusId_fkey` FOREIGN KEY (`statusId`) REFERENCES `UsStatus`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `UserStory` ADD CONSTRAINT `UserStory_projectId_statusSlug_fkey` FOREIGN KEY (`projectId`, `statusSlug`) REFERENCES `UsStatus`(`projectId`, `slug`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `TaskStatus` ADD CONSTRAINT `TaskStatus_projectId_fkey` FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

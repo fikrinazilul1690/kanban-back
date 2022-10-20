@@ -13,7 +13,12 @@ import {
 import { UserStoryService } from './user-story.service';
 import { CreateUserStoryDto } from './dto/create-user-story.dto';
 import { UpdateUserStoryDto } from './dto/update-user-story.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Req } from '@nestjs/common/decorators';
 import { Request } from 'express';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -25,23 +30,27 @@ export class UserStoryController {
 
   @Post()
   @ApiBearerAuth()
+  @ApiCreatedResponse({ type: UserStoryEntity })
   create(@Body() createUserStoryDto: CreateUserStoryDto) {
     return this.userStoryService.create(createUserStoryDto);
   }
 
   @Get()
   @Public()
+  @ApiOkResponse({ type: UserStoryEntity, isArray: true })
   findAll() {
     return this.userStoryService.findAll();
   }
 
   @Patch('update-order')
   @ApiBearerAuth()
+  @ApiOkResponse()
   updateOrder(@Body() updateOrderUsDto: UpdateOrderUserStoryDto) {
     return this.userStoryService.updateOrder(updateOrderUsDto);
   }
 
   @Get(':usId')
+  @ApiOkResponse({ type: UserStoryEntity })
   @Public()
   findOne(@Param('usId', ParseIntPipe) id: number, @Req() req: Request) {
     return new UserStoryEntity(req.userStory);
@@ -52,8 +61,9 @@ export class UserStoryController {
   update(
     @Param('usId', ParseIntPipe) id: number,
     @Body() updateUserStoryDto: UpdateUserStoryDto,
+    @Req() req: Request,
   ) {
-    return this.userStoryService.update(+id, updateUserStoryDto);
+    return this.userStoryService.update(+id, updateUserStoryDto, req);
   }
 
   @Delete(':usId')

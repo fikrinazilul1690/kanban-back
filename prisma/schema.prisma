@@ -85,7 +85,6 @@ model Project {
   Member   Member[]
   UsStatuts  UsStatus[]
   TaskStatus TaskStatus[]
-  UserStory  UserStory[]
   Task       Task[]
 }
 
@@ -123,9 +122,8 @@ model UserStory {
   description String?  @db.Text
   order       Int
   projectId   Int
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  statusId    Int
-  usStatus    UsStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusSlug  String
+  usStatus    UsStatus @relation(fields: [projectId, statusSlug], references: [projectId, slug], onDelete: Cascade)
   Task        Task[]
 }
 

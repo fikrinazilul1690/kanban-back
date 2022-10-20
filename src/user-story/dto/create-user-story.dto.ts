@@ -27,8 +27,8 @@ export class CreateUserStoryDto {
   projectId: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   @IsOptional()
-  statusId?: number;
+  statusSlug: string;
 }

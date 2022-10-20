@@ -24,7 +24,7 @@ export class UserStoryEntity implements UserStory {
   projectId: number;
 
   @ApiProperty()
-  statusId: number;
+  statusSlug: string;
 
   constructor(partial: Partial<UserStoryEntity>) {
     Object.assign(this, partial);
