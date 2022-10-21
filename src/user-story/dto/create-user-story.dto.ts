@@ -30,5 +30,5 @@ export class CreateUserStoryDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  statusSlug: string;
+  statusSlug?: string;
 }

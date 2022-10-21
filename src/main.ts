@@ -1,3 +1,5 @@
+import { TaskModule } from './task/task.module';
+import { TaskStatusModule } from './task-status/task-status.module';
 import {
   ValidationFilter,
   ValidationException,
@@ -47,6 +49,8 @@ async function bootstrap() {
       exceptionFactory: (errors: ValidationError[]) => {
         const errMsg = {};
         errors.forEach((err) => {
+          err.constraints &&
+            (errMsg[err.property] = [...Object.values(err.constraints)]);
           if (err.children.length !== 0) {
             err.children.forEach((err) => {
               err.children.forEach(
@@ -84,6 +88,8 @@ async function bootstrap() {
       MemberModule,
       UsStatusModule,
       UserStoryModule,
+      TaskStatusModule,
+      TaskModule,
     ],
   });
   SwaggerModule.setup('api', app, document, {

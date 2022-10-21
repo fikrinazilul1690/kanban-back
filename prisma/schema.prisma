@@ -85,7 +85,6 @@ model Project {
   Member   Member[]
   UsStatuts  UsStatus[]
   TaskStatus TaskStatus[]
-  Task       Task[]
 }
 
 model Color {
@@ -125,6 +124,8 @@ model UserStory {
   statusSlug  String
   usStatus    UsStatus @relation(fields: [projectId, statusSlug], references: [projectId, slug], onDelete: Cascade)
   Task        Task[]
+
+  @@unique([id, projectId])
 }
 
 model TaskStatus {
@@ -134,7 +135,7 @@ model TaskStatus {
 
   name      String
   slug      String
-  isColsed  Boolean @default(false)
+  isClosed  Boolean @default(false)
   projectId Int
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   colorHex  String
@@ -155,9 +156,8 @@ model Task {
   order       Int
 
   usId       Int
-  userStory  UserStory  @relation(fields: [usId], references: [id], onDelete: Cascade)
   projectId  Int
-  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  statusId   Int
-  taskStatus TaskStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  userStory  UserStory  @relation(fields: [usId, projectId], references: [id, projectId], onDelete: Cascade)
+  statusSlug String
+  taskStatus TaskStatus @relation(fields: [projectId, statusSlug], references: [projectId, slug], onDelete: Cascade)
 }

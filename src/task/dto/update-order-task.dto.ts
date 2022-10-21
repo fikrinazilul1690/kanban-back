@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class OrderUserStoryDto {
+export class OrderTaskDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
@@ -23,9 +23,9 @@ export class OrderUserStoryDto {
   order: number;
 }
 
-export class UpdateOrderUserStoryDto {
+export class UpdateOrderTaskDto {
   @ApiProperty({
-    type: OrderUserStoryDto,
+    type: OrderTaskDto,
     isArray: true,
   })
   @ArrayMinSize(2)
@@ -33,6 +33,6 @@ export class UpdateOrderUserStoryDto {
   @IsNotEmpty()
   @IsDefined()
   @ValidateNested({ each: true })
-  @Type(() => OrderUserStoryDto)
-  bulkStories: OrderUserStoryDto[];
+  @Type(() => OrderTaskDto)
+  bulkTask: OrderTaskDto[];
 }

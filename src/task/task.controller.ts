@@ -1,34 +1,65 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { UpdateOrderTaskDto } from './dto/update-order-task.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Req,
+} from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { Request } from 'express';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/common/decorators/public.decorator';
 
-@Controller('task')
+@Controller({ version: '1', path: 'tasks' })
+@ApiTags('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
+  @ApiBearerAuth()
   create(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.create(createTaskDto);
   }
 
   @Get()
+  @Public()
   findAll() {
     return this.taskService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.taskService.findOne(+id);
+  @Patch('update-order')
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  updateOrder(@Body() updateOrderTaskDto: UpdateOrderTaskDto) {
+    return this.taskService.updateOrder(updateOrderTaskDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.taskService.update(+id, updateTaskDto);
+  @Get(':taskId')
+  @Public()
+  findOne(@Param('taskId', ParseIntPipe) id: number, @Req() req: Request) {
+    return req.task;
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.taskService.remove(+id);
+  @Patch(':taskId')
+  @ApiBearerAuth()
+  update(
+    @Param('taskId', ParseIntPipe) id: number,
+    @Body() updateTaskDto: UpdateTaskDto,
+    @Req() req: Request,
+  ) {
+    return this.taskService.update(id, updateTaskDto, req);
+  }
+
+  @Delete(':taskId')
+  @ApiBearerAuth()
+  remove(@Param('taskId', ParseIntPipe) id: number) {
+    return this.taskService.remove(id);
   }
 }

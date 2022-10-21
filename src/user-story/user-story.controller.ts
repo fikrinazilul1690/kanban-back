@@ -9,6 +9,7 @@ import {
   Patch,
   Param,
   Delete,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserStoryService } from './user-story.service';
 import { CreateUserStoryDto } from './dto/create-user-story.dto';
@@ -16,10 +17,11 @@ import { UpdateUserStoryDto } from './dto/update-user-story.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Req } from '@nestjs/common/decorators';
+import { HttpCode, Req } from '@nestjs/common/decorators';
 import { Request } from 'express';
 import { Public } from 'src/common/decorators/public.decorator';
 
@@ -44,7 +46,7 @@ export class UserStoryController {
 
   @Patch('update-order')
   @ApiBearerAuth()
-  @ApiOkResponse()
+  @ApiOkResponse({ type: UserStoryEntity, isArray: true })
   updateOrder(@Body() updateOrderUsDto: UpdateOrderUserStoryDto) {
     return this.userStoryService.updateOrder(updateOrderUsDto);
   }
@@ -58,6 +60,7 @@ export class UserStoryController {
 
   @Patch(':usId')
   @ApiBearerAuth()
+  @ApiOkResponse({ type: UserStoryEntity })
   update(
     @Param('usId', ParseIntPipe) id: number,
     @Body() updateUserStoryDto: UpdateUserStoryDto,
@@ -68,6 +71,8 @@ export class UserStoryController {
 
   @Delete(':usId')
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
   remove(@Param('usId', ParseIntPipe) id: number) {
     return this.userStoryService.remove(+id);
   }
