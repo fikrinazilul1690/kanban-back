@@ -52,8 +52,22 @@ export class ProjectService {
     return project;
   }
 
-  async findAll() {
-    const projects = await this.prisma.project.findMany();
+  async findAll(id: string) {
+    const projects = await this.prisma.project.findMany({
+      ...(id
+        ? {
+            where: {
+              Member: {
+                some: {
+                  user: {
+                    id,
+                  },
+                },
+              },
+            },
+          }
+        : {}),
+    });
     if (projects.length === 0)
       throw new NotFoundException('Projects not Found!');
     return projects;
@@ -106,7 +120,7 @@ export class ProjectService {
 
   async update(id: number, updateProjectDto: UpdateProjectDto) {
     const { title, description } = updateProjectDto;
-    const slug = await this.createSlug(title);
+    const slug = title ? await this.createSlug(title) : undefined;
     return await this.prisma.project.update({
       where: {
         id,

@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UsStatusService } from './us-status.service';
 import { CreateUsStatusDto } from './dto/create-us-status.dto';
@@ -19,6 +20,7 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -38,9 +40,10 @@ export class UsStatusController {
 
   @Get()
   @Public()
+  @ApiQuery({ required: false, name: 'projectId' })
   @ApiOkResponse({ type: UsStatusEntity, isArray: true })
-  findAll() {
-    return this.usStatusService.findAll();
+  findAll(@Query('projectId') projectId: number) {
+    return this.usStatusService.findAll(projectId);
   }
 
   @Get(':usStatusId')

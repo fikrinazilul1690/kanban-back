@@ -96,7 +96,10 @@ async function bootstrap() {
     customSiteTitle: 'Kanban Board',
   });
 
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://0.0.0.0:3000'],
+    credentials: true,
+  });
 
   app.use(cookieParser());
 

@@ -82,8 +82,8 @@ model Project {
 
   user       User         @relation(fields: [owner], references: [id])
   owner      String
-  Member   Member[]
-  UsStatuts  UsStatus[]
+  Member     Member[]
+  UsStatus   UsStatus[]
   TaskStatus TaskStatus[]
 }
 

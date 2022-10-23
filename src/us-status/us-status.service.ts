@@ -34,8 +34,17 @@ export class UsStatusService {
     });
   }
 
-  async findAll() {
-    const usStatuses = await this.prisma.usStatus.findMany();
+  async findAll(projectId: number) {
+    const usStatuses = await this.prisma.usStatus.findMany({
+      ...(projectId && {
+        where: {
+          projectId: projectId,
+        },
+      }),
+      orderBy: {
+        id: 'asc',
+      },
+    });
     if (usStatuses.length === 0)
       throw new NotFoundException('User story statuses not Found!');
     return usStatuses;

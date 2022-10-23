@@ -9,7 +9,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  Req,
+  Query,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -21,6 +21,7 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -43,9 +44,10 @@ export class ProjectController {
 
   @Get()
   @ApiOkResponse({ type: ProjectEntity, isArray: true })
+  @ApiQuery({ required: false, name: 'userId' })
   @Public()
-  findAll(): Promise<ProjectEntity[]> {
-    return this.projectService.findAll();
+  findAll(@Query('userId') userId: string): Promise<ProjectEntity[]> {
+    return this.projectService.findAll(userId);
   }
 
   @Get(':projectId')
