@@ -1,3 +1,4 @@
+import { FilterUserStoryDto } from './dto/filter-user-story.dto';
 import { UpdateOrderUserStoryDto } from './dto/update-order-user-story.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -44,8 +45,14 @@ export class UserStoryService {
     return countUserStories + 1;
   }
 
-  async findAll() {
-    const userStories = await this.prisma.userStory.findMany();
+  async findAll(query: FilterUserStoryDto) {
+    const { projectId, statusSlug } = query;
+    const userStories = await this.prisma.userStory.findMany({
+      where: {
+        statusSlug,
+        ...(!!projectId && { projectId }),
+      },
+    });
     if (userStories.length === 0)
       throw new NotFoundException('User stories does not exist');
     return userStories;

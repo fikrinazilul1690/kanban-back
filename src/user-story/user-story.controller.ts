@@ -1,3 +1,4 @@
+import { FilterUserStoryDto } from './dto/filter-user-story.dto';
 import { UpdateOrderUserStoryDto } from './dto/update-order-user-story.dto';
 import { UserStoryEntity } from './entities/user-story.entity';
 import { ParseIntPipe } from '@nestjs/common/pipes';
@@ -19,9 +20,10 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { HttpCode, Req } from '@nestjs/common/decorators';
+import { HttpCode, Query, Req } from '@nestjs/common/decorators';
 import { Request } from 'express';
 import { Public } from 'src/common/decorators/public.decorator';
 
@@ -40,8 +42,8 @@ export class UserStoryController {
   @Get()
   @Public()
   @ApiOkResponse({ type: UserStoryEntity, isArray: true })
-  findAll() {
-    return this.userStoryService.findAll();
+  findAll(@Query() query: FilterUserStoryDto) {
+    return this.userStoryService.findAll(query);
   }
 
   @Patch('update-order')

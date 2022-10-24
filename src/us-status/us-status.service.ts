@@ -41,6 +41,13 @@ export class UsStatusService {
           projectId: projectId,
         },
       }),
+      include: {
+        UserStory: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
+      },
       orderBy: {
         id: 'asc',
       },
@@ -104,16 +111,18 @@ export class UsStatusService {
       data: {
         name,
         isClosed,
-        color: {
-          connectOrCreate: {
-            where: {
-              hex: colorHex,
-            },
-            create: {
-              hex: colorHex,
+        ...(!!colorHex && {
+          color: {
+            connectOrCreate: {
+              where: {
+                hex: colorHex,
+              },
+              create: {
+                hex: colorHex,
+              },
             },
           },
-        },
+        }),
       },
     });
   }
